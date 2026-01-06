@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Evergreen Grand Hotel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="admindashboard.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Evergreen Grand Hotel</h2>
+                <p>Admin Dashboard</p>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="#" class="nav-link active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#" class="nav-link" data-section="guest-management"><i class="fas fa-users"></i> Guest Management</a></li>
+                    <li><a href="#" class="nav-link" data-section="room-management"><i class="fas fa-bed"></i> Room Management</a></li>
+                    <li><a href="#" class="nav-link" data-section="reservations"><i class="fas fa-calendar-check"></i> Reservations</a></li>
+                    <li><a href="#" class="nav-link" data-section="payments"><i class="fas fa-credit-card"></i> Payments & Invoices</a></li>
+                    <li><a href="#" class="nav-link" data-section="feedback"><i class="fas fa-comment"></i> Feedback & Reviews</a></li>
+                    <li><a href="#" class="nav-link" data-section="staff"><i class="fas fa-user-tie"></i> Staff Management</a></li>
+                    <li><a href="#" class="nav-link" data-section="content"><i class="fas fa-images"></i> Content Updates</a></li>
+                    <li><a href="#" class="nav-link" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+            <div class="modal z-98" id="add-guest-modal" style="display: none;">
+                <div class="modal-content text-black">
+                    <i class="visible fas fa-x text-black" id="close-add-guest">
+                    </i>
+                    <h2 class="text-black text-center self-center text:lg" id="modal-title">Add New Guest</h2>
+                    <form id="guest-form">
+                        <div class="form-group">
+                            <label for="guest-name">Full Name</label>
+                            <input type="text" id="guest-name" name="guest-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guest-email">Email</label>
+                            <input type="email" id="guest-email" name="guest-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guest-phone">Phone</label>
+                            <input type="tel" id="guest-phone" name="guest-phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guest-last-stay">Last Stay</label>
+                            <input type="date" id="guest-last-stay" name="guest-last-stay">
+                        </div>
+                        <div class="form-group">
+                            <label for="guest-total-stays">Total Stays</label>
+                            <input type="number" id="guest-total-stays" name="guest-total-stays" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="guest-status">Status</label>
+                            <select id="guest-status" name="guest-status">
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button class="border border-black outline-black text-black" id="cancel-add-guest">Cancel</button>
+                            <button type="submit" id="save-guest">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal z-98" id="add-reservation-modal" style="display: none;">
+                <div class="modal-content text-black">
+                    <i class="visible fas fa-x text-black" id="close-add-reservation">
+                    </i>
+                    <h2 class="text-black text-center self-center text:lg" id="reservation-modal-title">Add New Reservation</h2>
+                    <form id="reservation-form">
+                        <!--div class="form-group">
+                            <label for="reservation-guest-name">Full Name</label>
+                            <input type="text" id="guest-name" name="guest-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reservation-guest-email">Email</label>
+                            <input type="email" id="guest-email" name="guest-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reservation-guest-phone">Phone</label>
+                            <input type="tel" id="guest-phone" name="guest-phone" required>
+                        </div-->
+                        <div class="form-group">
+                            <label for="reservation-room-number">Room Number</label>
+                            <input type="number" id="reservation-room-number" name="reservation-room-number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reservation-checkin">Check In</label>
+                            <input type="date" id="reservation-checkin" name="reservation-checkin">
+                        </div>
+                        <div class="form-group">
+                            <label for="reservation-checkout">Check Out</label>
+                            <input type="date" id="reservation-checkout" name="reservation-checkout">
+                        </div>
+                        <div class="form-group">
+                            <label for="reservation-room-type">Room Type</label>
+                            <select id="reservation-room-type" name="reservation-room-type">
+                                <option value="Single">Single</option>
+                                <option value="Double">Double</option>
+                                <option value="Suite">Suite</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reservation-status">Status</label>
+                            <select id="reservation-status" name="reservation-status">
+                                <option value="Active">Active</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reservation-payment-status">Status</label>
+                            <select id="reservation-payment-status" name="reservation-payment-status">
+                                <option value="Paid">Paid</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Refunded">Refunded</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button class="border border-black outline-black text-black" id="cancel-add-reservation">Cancel</button>
+                            <button type="submit" id="save-reservation">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="main-content">
+            <div class="header">
+                <button class="toggle-sidebar" id="toggle-sidebar"><i class="fas fa-bars"></i></button>
+                <h1>Admin Dashboard</h1>
+                <div class="user-info">
+                    <img src="https://source.unsplash.com/random/40x40/?person" alt="Admin User">
+                    <div class="dropdown">
+                        <span id="admin-name">Admin User <i class="fas fa-chevron-down"></i></span>
+                        <div class="dropdown-content">
+                            <a href="#"><i class="fas fa-user"></i> Profile</a>
+                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="index.html" onClick="localStorage.removeItem('authToken')" id="admin-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="notification-area"></div>
+            <!-- Dashboard Section -->
+            <div class="section active" id="dashboard">
+                <div class="section-header">
+                    <h2>Dashboard Overview</h2>
+                    <div>
+                        <button class="btn" id="refresh-dashboard"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-users"></i></div>
+                        <h3>Total Guests</h3>
+                        <p id="total-guests">50</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-bed"></i></div>
+                        <h3>Available Rooms</h3>
+                        <p id="available-rooms">12</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+                        <h3>Today's Check-ins</h3>
+                        <p id="todays-checkins">7</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-calendar-minus"></i></div>
+                        <h3>Today's Check-outs</h3>
+                        <p id="todays-checkouts">3</p>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>Recent Reservations</h2>
+                </div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Guest Name</th>
+                                <th>Room</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-reservations">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">
+                    <h2>Revenue Overview</h2>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="placeholder-chart">
+                        <p>Revenue Chart Placeholder</p>
+                        <p>This would be a chart showing revenue data</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guest Management Section -->
+            <div class="section" id="guest-management">
+                <div class="section-header">
+                    <h2>Guest Management</h2>
+                    <button class="btn" id="add-guest-btn"><i class="fas fa-plus"></i> Add New Guest</button>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="guest-search" placeholder="Search guests...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Guest ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Last Stay</th>
+                                <th>Total Stays</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="guest-list">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <div class="pagination-item active">1</div>
+                    <div class="pagination-item">2</div>
+                    <div class="pagination-item">3</div>
+                    <div class="pagination-item">4</div>
+                    <div class="pagination-item">5</div>
+                </div>
+            </div>
+
+            <!-- Room Management Section -->
+            <div class="section" id="room-management">
+                <div id="add-room-modal" style="display: none; position: absolute; width: 95vw;" class="my-10 fixed room-form-container w-full scale-120 items-center m-60 z-98 justify-center">
+                    <i class="fas fa-x" id="close-add-room"></i>
+                    <h2 id="room-modal-title">Add New Room</h2>
+                    <form id="roomForm">
+                        <div class="form-group">
+                            <label for="roomNumber">Room Number:</label>
+                            <input type="text" id="roomNumber" name="roomNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomType">Room Type:</label>
+                            <select id="roomType" name="roomType" required>
+                                <option value="Single">Single</option>
+                                <option value="Double">Double</option>
+                                <option value="Suite">Suite</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price per Night (N):</label>
+                            <input type="number" id="price" name="price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status:</label>
+                            <select id="status" name="status" required>
+                                <option value="Available">Available</option>
+                                <option value="Occupied">Occupied</option>
+                                <option value="Maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="adults">Adults:</label>
+                            <input type="number" id="adults" name="adults" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description:</label>
+                            <textarea id="description" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="amenities">Amenities (comma separated):</label>
+                            <input type="text" id="amenities" name="amenities">
+                        </div>
+                        <button id="confirm-room-btn" type="submit">Add Room</button>
+                    </form>
+                </div>
+                <div class="section-header">
+                    <h2>Room Management</h2>
+                    <button class="btn" id="add-room-btn"><i class="fas fa-plus"></i> Add New Room</button>
+                </div>
+                <!-- Add this where you want the form to appear in admindashboard.html -->
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="all-rooms">All Rooms</div>
+                    <div class="tab" data-tab="available">Available</div>
+                    <div class="tab" data-tab="occupied">Occupied</div>
+                    <div class="tab" data-tab="maintenance">Maintenance</div>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="room-search" placeholder="Search rooms...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="tab-content active" id="all-rooms">
+                    <div class="room-grid">
+                        <!-- Room cards will be injected here by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="tab-content" id="available">
+                    <!-- Available rooms content -->
+                    <p>Available rooms would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="occupied">
+                    <!-- Occupied rooms content -->
+                    <p>Occupied rooms would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="maintenance">
+                    <!-- Maintenance rooms content -->
+                    <p>Rooms under maintenance would be displayed here</p>
+                </div>
+            </div>
+
+            <!-- Reservations Section -->
+            <div class="section" id="reservations">
+                <div class="section-header">
+                    <h2>Reservations</h2>
+                    <button class="btn" id="add-reservation-btn"><i class="fas fa-plus"></i> New Reservation</button>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="upcoming">Upcoming</div>
+                    <div class="tab" data-tab="current">Current</div>
+                    <div class="tab" data-tab="past">Past</div>
+                    <div class="tab" data-tab="cancelled">Cancelled</div>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="reservation-search" placeholder="Search reservations...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="tab-content active" id="upcoming">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Guest Name</th>
+                                    <th>Room</th>
+                                    <th>Room Type</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservation-list">
+                                <tr>
+                                    <td>BK-2023-004</td>
+                                    <td>John Smith</td>
+                                    <td>Deluxe Suite 302</td>
+                                    <td>May 15, 2023</td>
+                                    <td>May 20, 2023</td>
+                                    <td><span class="status active">Confirmed</span></td>
+                                    <td><span class="status active">Paid</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>BK-2023-005</td>
+                                    <td>Emma Johnson</td>
+                                    <td>Executive Room 206</td>
+                                    <td>May 18, 2023</td>
+                                    <td>May 22, 2023</td>
+                                    <td><span class="status pending">Pending</span></td>
+                                    <td><span class="status pending">Pending</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="current">
+                    <!-- Current reservations content -->
+                    <p>Current reservations would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="past">
+                    <!-- Past reservations content -->
+                    <p>Past reservations would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="cancelled">
+                    <!-- Cancelled reservations content -->
+                    <p>Cancelled reservations would be displayed here</p>
+                </div>
+            </div>
+
+            <!-- Payments Section -->
+            <div class="section" id="payments">
+                <div class="section-header">
+                    <h2>Payments & Invoices</h2>
+                    <button class="btn" id="create-invoice-btn"><i class="fas fa-plus"></i> Create Invoice</button>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="all-payments">All Payments</div>
+                    <div class="tab" data-tab="pending-payments">Pending</div>
+                    <div class="tab" data-tab="completed-payments">Completed</div>
+                    <div class="tab" data-tab="refunded-payments">Refunded</div>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="payment-search" placeholder="Search payments...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="tab-content active" id="all-payments">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Booking ID</th>
+                                    <th>Guest</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>INV-2023-001</td>
+                                    <td>BK-2023-001</td>
+                                    <td>Daniel Ogba</td>
+                                    <td>$750.00</td>
+                                    <td>May 3, 2023</td>
+                                    <td>Credit Card</td>
+                                    <td><span class="status active">Paid</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-print"></i></button>
+                                        <button class="action-btn"><i class="fas fa-envelope"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>INV-2023-002</td>
+                                    <td>BK-2023-002</td>
+                                    <td>Chinedu Johnson</td>
+                                    <td>$900.00</td>
+                                    <td>May 5, 2023</td>
+                                    <td>Bank Transfer</td>
+                                    <td><span class="status pending">Pending</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-print"></i></button>
+                                        <button class="action-btn"><i class="fas fa-envelope"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>INV-2023-003</td>
+                                    <td>BK-2023-003</td>
+                                    <td>Michael Deborah</td>
+                                    <td>$240.00</td>
+                                    <td>May 2, 2023</td>
+                                    <td>PayPal</td>
+                                    <td><span class="status cancelled">Refunded</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-print"></i></button>
+                                        <button class="action-btn"><i class="fas fa-envelope"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="pending-payments">
+                    <!-- Pending payments content -->
+                    <p>Pending payments would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="completed-payments">
+                    <!-- Completed payments content -->
+                    <p>Completed payments would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="refunded-payments">
+                    <!-- Refunded payments content -->
+                    <p>Refunded payments would be displayed here</p>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="section" id="feedback">
+                <div class="section-header">
+                    <h2>Feedback & Reviews</h2>
+                    <button class="btn" id="request-feedback-btn"><i class="fas fa-paper-plane"></i> Request Feedback</button>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="all-reviews">All Reviews</div>
+                    <div class="tab" data-tab="new-reviews">New</div>
+                    <div class="tab" data-tab="published-reviews">Published</div>
+                    <div class="tab" data-tab="hidden-reviews">Hidden</div>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="review-search" placeholder="Search reviews...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="tab-content active" id="all-reviews">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Guest</th>
+                                    <th>Rating</th>
+                                    <th>Review</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>REV-001</td>
+                                    <td>Daniel Ogba</td>
+                                    <td>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </td>
+                                    <td>Excellent service and beautiful rooms. Will definitely come back!</td>
+                                    <td>May 9, 2023</td>
+                                    <td><span class="status active">Published</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-reply"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>REV-002</td>
+                                    <td>Sarah Johnson</td>
+                                    <td>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </td>
+                                    <td>Great stay overall. The staff was very friendly and helpful.</td>
+                                    <td>May 11, 2023</td>
+                                    <td><span class="status pending">New</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-reply"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>REV-003</td>
+                                    <td>Michael Deborah</td>
+                                    <td>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </td>
+                                    <td>Room service was slow and the air conditioning wasn't working properly.</td>
+                                    <td>May 7, 2023</td>
+                                    <td><span class="status cancelled">Hidden</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-reply"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="new-reviews">
+                    <!-- New reviews content -->
+                    <p>New reviews would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="published-reviews">
+                    <!-- Published reviews content -->
+                    <p>Published reviews would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="hidden-reviews">
+                    <!-- Hidden reviews content -->
+                    <p>Hidden reviews would be displayed here</p>
+                </div>
+            </div>
+
+            <!-- Staff Management Section -->
+            <div class="section" id="staff">
+                <div class="section-header">
+                    <h2>Staff Management</h2>
+                    <button class="btn" id="add-staff-btn"><i class="fas fa-plus"></i> Add Staff Member</button>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="all-staff">All Staff</div>
+                    <div class="tab" data-tab="management">Management</div>
+                    <div class="tab" data-tab="front-desk">Front Desk</div>
+                    <div class="tab" data-tab="housekeeping">Housekeeping</div>
+                    <div class="tab" data-tab="maintenance">Maintenance</div>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" id="staff-search" placeholder="Search staff...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="tab-content active" id="all-staff">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Department</th>
+                                    <th>Contact</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>EMP-001</td>
+                                    <td>John Doe</td>
+                                    <td>General Manager</td>
+                                    <td>Management</td>
+                                    <td>john.doe@example.com</td>
+                                    <td><span class="status active">Active</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EMP-002</td>
+                                    <td>Jane Smith</td>
+                                    <td>Front Desk Manager</td>
+                                    <td>Front Desk</td>
+                                    <td>jane.smith@example.com</td>
+                                    <td><span class="status active">Active</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EMP-003</td>
+                                    <td>Robert Johnson</td>
+                                    <td>Housekeeping Supervisor</td>
+                                    <td>Housekeeping</td>
+                                    <td>robert.j@example.com</td>
+                                    <td><span class="status active">Active</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EMP-004</td>
+                                    <td>Michael Brown</td>
+                                    <td>Maintenance Technician</td>
+                                    <td>Maintenance</td>
+                                    <td>michael.b@example.com</td>
+                                    <td><span class="status pending">On Leave</span></td>
+                                    <td>
+                                        <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="management">
+                    <!-- Management staff content -->
+                    <p>Management staff would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="front-desk">
+                    <!-- Front desk staff content -->
+                    <p>Front desk staff would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="housekeeping">
+                    <!-- Housekeeping staff content -->
+                    <p>Housekeeping staff would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="maintenance">
+                    <!-- Maintenance staff content -->
+                    <p>Maintenance staff would be displayed here</p>
+                </div>
+            </div>
+
+            <!-- Content Updates Section -->
+            <div class="section" id="content">
+                <div class="section-header">
+                    <h2>Content Updates</h2>
+                    <button class="btn" id="add-content-btn"><i class="fas fa-plus"></i> Add New Content</button>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="website">Website</div>
+                    <div class="tab" data-tab="promotions">Promotions</div>
+                    <div class="tab" data-tab="gallery">Gallery</div>
+                    <div class="tab" data-tab="social-media">Social Media</div>
+                </div>
+
+                <div class="tab-content active" id="website">
+                    <div class="content-cards">
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <h3>Homepage Banner</h3>
+                                <span class="status active">Published</span>
+                            </div>
+                            <div class="content-card-body">
+                                <img src="https://source.unsplash.com/random/400x200/?hotel,luxury" alt="Homepage Banner">
+                                <p>Welcome to Evergreen Grand Hotel - Where Luxury Meets Comfort</p>
+                            </div>
+                            <div class="content-card-footer">
+                                <span>Last updated: May 1, 2023</span>
+                                <div>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <h3>Special Offers Section</h3>
+                                <span class="status active">Published</span>
+                            </div>
+                            <div class="content-card-body">
+                                <img src="https://source.unsplash.com/random/400x200/?hotel,pool" alt="Special Offers">
+                                <p>Summer Special: Book 3 nights, get 1 night free!</p>
+                            </div>
+                            <div class="content-card-footer">
+                                <span>Last updated: May 5, 2023</span>
+                                <div>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <div class="content-card-header">
+                                <h3>About Us Page</h3>
+                                <span class="status pending">Draft</span>
+                            </div>
+                            <div class="content-card-body">
+                                <img src="https://source.unsplash.com/random/400x200/?hotel,lobby" alt="About Us">
+                                <p>Our story begins in 1985 when the Evergreen Grand Hotel first opened its doors...</p>
+                            </div>
+                            <div class="content-card-footer">
+                                <span>Last updated: May 10, 2023</span>
+                                <div>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="promotions">
+                    <!-- Promotions content -->
+                    <p>Promotions content would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="gallery">
+                    <!-- Gallery content -->
+                    <p>Gallery content would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="social-media">
+                    <!-- Social media content -->
+                    <p>Social media content would be displayed here</p>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="section" id="settings">
+                <div class="section-header">
+                    <h2>System Settings</h2>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="general">General</div>
+                    <div class="tab" data-tab="booking">Booking</div>
+                    <div class="tab" data-tab="payment">Payment</div>
+                    <div class="tab" data-tab="notifications">Notifications</div>
+                    <div class="tab" data-tab="users">Users</div>
+                </div>
+
+                <div class="tab-content active" id="general">
+                    <form class="settings-form">
+                        <div class="form-group">
+                            <label for="hotel-name">Hotel Name</label>
+                            <input type="text" id="hotel-name" value="Evergreen Grand Hotel">
+                        </div>
+                        <div class="form-group">
+                            <label for="hotel-address">Address</label>
+                            <textarea id="hotel-address" rows="3">Beside Unity Supermarket Ilubo RD<br>Osogbo, Osun State, Nigeria</textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="hotel-email">Email</label>
+                                <input type="email" id="hotel-email" value="info@evergreengrandhotel.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="hotel-phone">Phone</label>
+                                <input type="tel" id="hotel-phone" value="+234 903 424 4576">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="timezone">Timezone</label>
+                            <select id="timezone">
+                                <option value="Africa/Lagos">Africa/Lagos (GMT+1)</option>
+                                <option value="UTC">UTC (GMT+0)</option>
+                                <option value="America/New_York">America/New_York (GMT-5)</option>
+                                <option value="Europe/London">Europe/London (GMT+0)</option>
+                                <option value="Asia/Tokyo">Asia/Tokyo (GMT+9)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="date-format">Date Format</label>
+                            <select id="date-format">
+                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency">
+                                <option value="USD" selected>USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                                <option value="NGN">NGN (₦)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    </form>
+                </div>
+
+                <div class="tab-content" id="booking">
+                    <!-- Booking settings content -->
+                    <p>Booking settings would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="payment">
+                    <!-- Payment settings content -->
+                    <p>Payment settings would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="notifications">
+                    <!-- Notification settings content -->
+                    <p>Notification settings would be displayed here</p>
+                </div>
+
+                <div class="tab-content" id="users">
+                    <!-- User settings content -->
+                    <p>User settings would be displayed here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="admindashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<div class="modal" id="booking-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Book Your Stay</h2>
+            <form class="booking-form">
+                <div class="form-group">
+                    <label for="check-in">Check-in Date</label>
+                    <input type="date" id="check-in" required>
+                </div>
+                <div class="form-group">
+                    <label for="check-out">Check-out Date</label>
+                    <input type="date" id="check-out" required>
+                </div>
+                <div class="form-group">
+                    <label for="adults">Adults</label>
+                    <select id="adults" required>
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="children">Children</label>
+                    <select id="children">
+                        <option value="0" selected>0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="room-type">Room Type</label>
+                    <select id="room-type" required>
+                        <option value="" disabled selected>Select Room Type</option>
+                        <option value="single">Deluxe Garden View</option>
+                        <option value="double">Family Suite</option>
+                        <option value="suite">Presidential Villa</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-full">Check Availability</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate fetching available rooms
+            function fetchAvailableRooms() {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(['Ocean View Suite', 'Deluxe Room', 'Presidential Suite']);
+                    }, 1000);
+                });
+            }
+
+            // Populate room options
+            fetchAvailableRooms().then(rooms => {
+                const roomTypeSelect = document.getElementById('room-type');
+                rooms.forEach(room => {
+                    const option = document.createElement('option');
+                    option.value = room;
+                    option.textContent = room;
+                    roomTypeSelect.appendChild(option);
+                });
+            });
+
+            // Handle form submission
+            const bookingForm = document.getElementById('booking-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const loadingIndicator = document.getElementById('loading');
+
+            bookingForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                submitBtn.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+
+                // Simulate form submission
+                setTimeout(() => {
+                    alert('Booking successful!');
+                    window.location.href = 'userdashboard.html';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

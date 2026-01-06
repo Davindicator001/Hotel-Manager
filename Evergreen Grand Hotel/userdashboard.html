@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Dashboard - Evergreen Grand Hotel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="userdashboardstyle.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="dashboard-page">
+    <!-- Header Section -->
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <div class="contact-info">
+                    <a href="tel:+23409034244576"><i class="fas fa-phone"></i> (+234) 0903 424 4576</a>
+                    <a href="mailto:evergreengrandhotel@gmail.com"><i class="fas fa-envelope"></i>evergreengrandhotel@gmail.com"</a>
+                </div>
+                <div class="social-links">
+                    <a href="https://facebook.com/evergreengrandhotel"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/evergreengrand"><i class="fab fa-twitter"></i></a>
+                    <a href="https://instagram.com/evergreengrandhotel"><i class="fab fa-instagram"></i></a>
+                    <a href="https://tripadvisor.com/evergreengrandhotel"><i class="fab fa-tripadvisor"></i></a>
+                </div>
+            </div>
+        </div>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html">
+                        <span>Evergreen Grand Hotel</span>
+                    </a>
+                </div>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="user-menu">
+                    <div class="user-profile">
+                        <img src="/placeholder.svg?height=40&width=40" alt="User Profile">
+                        <span> <p id="name-menu"></p> <i class="fas fa-chevron-down"></i></span>
+                        <div class="user-dropdown">
+                            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                            <a href="profile.html"><i class="fas fa-user-edit"></i> Edit Profile</a>
+                            <a href="booking-history.html"><i class="fas fa-history"></i> Booking History</a>
+                            <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+                            <a onClick="localStorage.removeItem('authToken')" href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div id="booking-alert" class="alert" style="display: none; position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background-color: #28a745; color: white; padding: 12px 30px; border-radius: 6px; z-index: 1000;">
+        ✅ Booking Confirmed!
+    </div>
+    <!-- Dashboard Section -->
+    <section class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <div class="welcome-message">
+                    <h1>Welcome back, <span id="name-greet">!</span></h1>
+                    <p>Manage your bookings and explore exclusive offers tailored just for you.</p>
+                </div>
+                <div class="quick-actions">
+                    <a id="new-booking" class="btn"><i class="fas fa-plus"></i> New Booking</a>
+                    <a href="support.html" class="btn btn-outline"><i class="fas fa-headset"></i> Support</a>
+                </div>
+            </div>
+            <div class="modal" id="booking-modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Book Your Stay</h2>
+                    <form class="booking-form">
+                        <div class="form-group">
+                            <label for="check-in">Check-in Date</label>
+                            <input type="date" id="check-in" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="check-out">Check-out Date</label>
+                            <input type="date" id="check-out" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adults">Adults</label>
+                            <select id="adults" required>
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="children">Children</label>
+                            <select id="children">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="room-type">Room Type</label>
+                            <select id="room-type" required>
+                                <option value="" disabled selected>Select Room Type</option>
+                                <option value="Single">Single Room</option>
+                                <option value="Double">Double Room</option>
+                                <option value="Suite">Suite</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="booking-btn" class="btn btn-full">Check Availability</button>
+                    </form>
+                </div>
+            </div>
+            <div class="dashboard-grid">
+                <!-- Sidebar -->
+                <div class="dashboard-sidebar">
+                    <ul class="sidebar-menu">
+                        <li class="active"><a href="#overview"><i class="fas fa-home"></i> Overview</a></li>
+                        <li><a href="#bookings"><i class="fas fa-calendar-check"></i> My Bookings</a></li>
+                        <li><a href="#profile"><i class="fas fa-user"></i> Profile</a></li>
+                        <li><a href="#rewards"><i class="fas fa-gift"></i> Rewards</a></li>
+                        <li><a href="#preferences"><i class="fas fa-sliders-h"></i> Preferences</a></li>
+                        <li><a href="#support"><i class="fas fa-question-circle"></i> Support</a></li>
+                    </ul>
+
+                </div>
+
+                <!-- Main Content -->
+                <div class="dashboard-content">
+                    <!-- Overview Section -->
+                    <div class="dashboard-section active" id="overview">
+                        <div class="dashboard-cards">
+                            <div class="dashboard-card">
+                                <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div class="card-content">
+                                    <h3>Upcoming Stay</h3>
+                                    <p class="highlight" id="latest-booking-days">May 15 - May 20, 2023</p>
+                                    <p id="latest-booking-time">Ocean View Suite</p>
+                                    <a href="manage-booking.html?id=EGH78945" class="card-link">Manage Booking</a>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-icon"><i class="fas fa-medal"></i></div>
+                                <div class="card-content">
+                                    <h3>Loyalty Points</h3>
+                                    <p class="highlight">750 Points</p>
+                                    <p>Gold Member Status</p>
+                                    <a href="redeem-points.html" class="card-link">Redeem Points</a>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-icon"><i class="fas fa-percentage"></i></div>
+                                <div class="card-content">
+                                    <h3>Special Offers</h3>
+                                    <p class="highlight">3 New Offers</p>
+                                    <p>Exclusive for you</p>
+                                    <a href="special-offers.html" class="card-link">View Offers</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Check-in Status -->
+                        <div class="checkin-status">
+                            <h2>Upcoming Reservation</h2>
+                            <div class="status-card">
+                                <div class="status-header">
+                                    <div class="status-info">
+                                        <h3>Ocean View Suite</h3>
+                                        <p>Reservation #EGH78945</p>
+                                        <span class="status-badge confirmed">Confirmed</span>
+                                    </div>
+                                    <div class="status-dates">
+                                        <div class="date-item">
+                                            <span class="date-label">Check-in</span>
+                                            <span class="date">May 15, 2025</span>
+                                            <span class="time">From 2:00 PM</span>
+                                        </div>
+                                        <div class="date-separator"><i class="fas fa-arrow-right"></i></div>
+                                        <div class="date-item">
+                                            <span class="date-label">Check-out</span>
+                                            <span class="date">May 20, 2025</span>
+                                            <span class="time">Until 12:00 PM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="status-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-user"></i>
+                                        <span>2 Adults</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-bed"></i>
+                                        <span>King Bed</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-wifi"></i>
+                                        <span>Free Wi-Fi</span>
+                                    </div>
+                                </div>
+                                <div class="status-actions">
+                                    <a href="modify-booking.html?id=EGH78945" class="btn btn-sm">Modify Booking</a>
+                                    <a href="cancel-booking.html?id=EGH78945" class="btn btn-outline btn-sm">Cancel Booking</a>
+                                    <a href="online-checkin.html?id=EGH78945" class="btn btn-accent btn-sm">Online Check-in</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                    <!-- Bookings Section (Placeholder) -->
+                    <div class="dashboard-section" id="bookings">
+                        <h2>My Bookings</h2>
+                        <p>View and manage all your current and past bookings.</p>
+                        <div class="table-responsive">
+                            <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+                                <thead>
+                                    <tr style="background-color: var(--bg-light); border-bottom: 1px solid var(--border-color);">
+                                        <th style="padding: 12px; text-align: left;">Booking ID</th>
+                                        <th style="padding: 12px; text-align: left;">Room</th>
+                                        <th style="padding: 12px; text-align: left;">Check-in</th>
+                                        <th style="padding: 12px; text-align: left;">Check-out</th>
+                                        <th style="padding: 12px; text-align: left;">Status</th>
+                                        <th style="padding: 12px; text-align: left;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <td style="padding: 12px;">EGH78945</td>
+                                        <td style="padding: 12px;">Presidential Deluxe Room</td>
+                                        <td style="padding: 12px;">May 15, 2025</td>
+                                        <td style="padding: 12px;">May 20, 2025</td>
+                                        <td style="padding: 12px;"><span class="status-badge confirmed">Confirmed</span></td>
+                                        <td style="padding: 12px;">
+                                            <a href="view-booking.html?id=EGH78945" style="color: var(--primary-color); margin-right: 10px;"><i class="fas fa-eye"></i></a>
+                                            <a href="modify-booking.html?id=EGH78945" style="color: var(--primary-color); margin-right: 10px;"><i class="fas fa-edit"></i></a>
+                                            <a href="cancel-booking.html?id=EGH78945" style="color: var(--danger-color);"><i class="fas fa-times"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-color);">
+                                        <td style="padding: 12px;">EGH65432</td>
+                                        <td style="padding: 12px;">Deluxe Room</td>
+                                        <td style="padding: 12px;">Mar 10, 2025</td>
+                                        <td style="padding: 12px;">Mar 15, 2025</td>
+                                        <td style="padding: 12px;"><span style="background-color: rgba(0, 0, 0, 0.1); color: var(--text-light); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase;">Completed</span></td>
+                                        <td style="padding: 12px;">
+                                            <a href="view-booking.html?id=EGH65432" style="color: var(--primary-color); margin-right: 10px;"><i class="fas fa-eye"></i></a>
+                                            <a href="book-again.html?id=EGH65432" style="color: var(--primary-color);"><i class="fas fa-redo"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Profile Section (Placeholder) -->
+                    <div class="dashboard-section" id="profile">
+                        <h2>My Profile</h2>
+                        <p>Manage your personal information and preferences.</p>
+                        <form style="margin-top: 20px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">First Name</label>
+                                    <input type="text" value="Chinedu" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Last Name</label>
+                                    <input type="text" value="Okonkwo" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Email</label>
+                                    <input type="email" value="joseph@example.com" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Phone</label>
+                                    <input type="tel" value="+234 903 424 4576" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: 500;">Address</label>
+                                <input type="text" value="15 Adeola Odeku Street" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 10px;">
+                                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px;">
+                                    <input type="text" value="Ciciliza Estate" placeholder="City" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                    <input type="text" value="Osogbo" placeholder="State" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                    <input type="text" value="Nigeria" placeholder="Country" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                </div>
+                            </div>
+                            <a href="update-profile.html" class="btn">Save Changes</a>
+                        </form>
+                    </div>
+
+                    <!-- Other sections would be added here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Chat Widget -->
+    <div class="live-chat-widget">
+        <div class="chat-button">
+            <i class="fas fa-comments"></i>
+            <span>Live Support</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2025 Evergreen Grand Hotel. All Rights Reserved.</p>
+                <ul class="footer-bottom-links">
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms & Conditions</a></li>
+                    <li><a href="sitemap.html">Sitemap</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="userdashboard.js"></script>
+</body>
+</html>

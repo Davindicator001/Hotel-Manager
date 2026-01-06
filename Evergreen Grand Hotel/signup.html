@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Evergreen Grand Hotel</title>
+    <link rel="stylesheet" href="signupstyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <div class="contact-info">
+                    <a href="tel:+2340904166302"><i class="fas fa-phone"></i> (+234) 090 416 6302</a>
+                    <a href="mailto:evergreengrandhotel@gmail.com"><i class="fas fa-envelope"></i> evergreen.g.hotel@gmail.com</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tripadvisor"></i></a>
+                </div>
+            </div>
+        </div>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html">
+                        <span>Evergreen Grand Hotel</span>
+                    </a>
+                </div>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#accommodations">Rooms & Suites</a></li>
+                    <li><a href="index.html#experiences">Dining</a></li>
+                    <li><a href="index.html#facilities">Facilities</a></li>
+                    <li><a href="index.html#gallery">Gallery</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+                <div class="reservation-btn">
+                    <a href="login.html" class="btn btn-outline">Login</a>
+                    <a href="signup.html" class="btn active">Sign Up</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="auth-section">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-form-container">
+                    <h2>Create an Account</h2>
+                    <p>Join Evergreen Grand Hotel to access exclusive offers and manage your bookings.</p>
+                    
+                    <!-- User Type Selection -->
+                    <div class="user-type-selection">
+                        <button type="button" id="guest-btn" class="active">Sign up as Guest</button>
+                        <button type="button" id="admin-btn">Sign up as Admin</button>
+                    </div>
+                    
+                    <!-- Notification -->
+                    <div class="notification error" id="notification">
+                        Invalid admin code. Please try again or contact system administrator.
+                    </div>
+                    
+                    <form class="auth-form" id="signup-form">
+                        <!-- Admin Code Section (Hidden by default) -->
+                        <div class="admin-code-section" id="admin-code-section">
+                            <div class="form-group">
+                                <label for="admin-code">Admin Authorization Code</label>
+                                <input type="password" id="admin-code" placeholder="Enter admin authorization code">
+                                <p style="font-size: 12px; margin-top: 5px; color: var(--text-light);">
+                                    Note: Admin registration requires an authorization code. Please contact the system administrator if you don't have one.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" id="user-type" name="userType" value="guest">
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first-name">First Name</label>
+                                <input type="text" id="first-name" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="last-name">Last Name</label>
+                                <input type="text" id="last-name" name="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="text" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" required>
+                            <p id="confirm" class="text-sm transition text-red-600 text-center invisible">passwords do not match</p>
+                        </div>
+                        <div class="form-options">
+                            <div class="remember-me">
+                                <input type="checkbox" id="terms" required>
+                                <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
+                            </div>
+                        </div>
+                        <button type="submit" id="signup-btn" class="btn btn-full">Create Account</button>
+                    </form>
+                   
+                    <div class="auth-footer">
+                        <p>Already have an account? <a href="login.html">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2025 Evergreen Grand Hotel. All Rights Reserved.</p>
+                <ul class="footer-bottom-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Sitemap</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="signup.js"></script>
+</body>
+</html>
