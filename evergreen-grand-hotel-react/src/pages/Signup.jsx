@@ -16,7 +16,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const navigate = useNavigate();
-  const API_BASE_URL = 'http://localhost:9000'//'https://evergreen-backend-80rh.onrender.com'
+  const API_BASE_URL = 'https://evergreen-backend-80rh.onrender.com' //'http://localhost:9000'
   const fadeInUp = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
